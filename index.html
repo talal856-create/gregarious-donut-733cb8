@@ -1,0 +1,56 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>GCC and BH Banks Compared</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#04264F;--card:#ffffff;--ink:#04264F;--mute:#566B8A;--acc:#0B5CAD;--err:#B45309}
+body{background:linear-gradient(135deg,#04264F 0%,#083981 60%,#0B4A9E 100%);min-height:100vh;margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+.lk{min-height:100vh;display:flex;align-items:center;justify-content:center;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
+.lkc{background:var(--card);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.3);padding:28px 26px;width:100%;max-width:380px;box-sizing:border-box}
+.lkc h1{font-size:21px;margin:0 0 4px;text-wrap:balance}.lkc p{margin:0 0 18px;color:var(--mute);font-size:14px}
+.lkc label{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.lkc input[type=password]{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:12px 14px;border:1px solid #C9D3E0;border-radius:12px;color:var(--ink)}
+.lkc input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:transparent}
+.lkr{display:flex;align-items:center;gap:8px;margin:12px 0 16px;font-size:13px;color:var(--mute)}.lkr input{width:18px;height:18px;margin:0}
+.lkc button{width:100%;font:inherit;font-weight:800;font-size:15px;color:#fff;background:var(--acc);border:0;border-radius:12px;padding:12px;cursor:pointer;min-height:46px}
+.lkc button[disabled]{opacity:.6;cursor:wait}
+.lke{min-height:20px;margin-top:10px;font-size:13px;color:var(--err);font-weight:600}
+.lkm{display:inline-block;width:38px;height:38px;border-radius:11px;background:#E8F0FA;color:var(--acc);font-size:20px;line-height:38px;text-align:center;margin-bottom:12px}
+</style>
+<div class="lk"><form class="lkc" id="lkf" autocomplete="off">
+<div class="lkm" aria-hidden="true">&#128274;</div>
+<h1>GCC and BH Banks Compared</h1>
+<p>This platform is password protected. Enter the password to continue.</p>
+<label for="lkp">Password</label>
+<input type="password" id="lkp" required autofocus aria-describedby="lke">
+<div class="lkr"><input type="checkbox" id="lkr"><label for="lkr" style="margin:0;text-transform:none;letter-spacing:0;font-weight:400;font-size:13px">Remember on this device</label></div>
+<button type="submit" id="lkb">Open the platform</button>
+<div class="lke" id="lke" role="alert"></div>
+</form></div>
+<script>
+(function(){
+var P={"s": "bOgAPFPfm3LflJt9EYlPzw==", "i": "qyxUp62fH26lRfdp", "n": 210000};
+var CTP=fetch("data/core.json").then(function(r){if(!r.ok)throw new Error("fetch");return r.json()}).then(function(j){return j.d});CTP.catch(function(){});
+function u8(b){var s=atob(b),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+async function open(pw){
+ var km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+ var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:u8(P.s),iterations:P.n,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+ var CT=await CTP;var plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:u8(P.i)},key,u8(CT));
+ window.__gbcKey=key;
+ var html=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+ return html}
+function show(html){document.open();document.write(html);document.close()}
+var f=document.getElementById("lkf"),b=document.getElementById("lkb"),e=document.getElementById("lke"),inp=document.getElementById("lkp");
+async function go(pw,remember){b.disabled=true;e.textContent="";b.textContent="Opening...";
+ try{var html=await open(pw);
+  try{if(remember)localStorage.setItem("gbc_pw",pw);else localStorage.removeItem("gbc_pw")}catch(x){}
+  show(html)}
+ catch(err){b.disabled=false;b.textContent="Open the platform";
+  if(!window.crypto||!crypto.subtle||typeof DecompressionStream==="undefined")e.textContent="This browser cannot open the platform. Please use a recent Chrome, Edge, Safari or Firefox.";
+  else{e.textContent="That password is not correct.";try{localStorage.removeItem("gbc_pw")}catch(x){}inp.select()}}}
+f.addEventListener("submit",function(ev){ev.preventDefault();go(inp.value,document.getElementById("lkr").checked)});
+var saved=null;try{saved=localStorage.getItem("gbc_pw")}catch(x){}
+if(saved){document.getElementById("lkr").checked=true;go(saved,true)}
+})();
+</script>
+
+</body></html>
